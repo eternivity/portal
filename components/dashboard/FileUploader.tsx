@@ -41,23 +41,16 @@ const approvalLabels = {
 function TypeIcon({ type }: { type: string | null }) {
   const normalized = type?.toLowerCase() ?? "pdf";
   const className = iconStyles[normalized] ?? "bg-gray-50 text-gray-600";
-  const label = normalized.slice(0, 4).toUpperCase();
   const Icon = normalized === "mp4" ? FileVideo : normalized === "zip" ? FileArchive : ["png", "jpg", "jpeg"].includes(normalized) ? FileImage : FileText;
 
   return (
-    <div className={cn("grid size-7 place-items-center rounded-md text-[10px] font-medium", className)} title={label}>
+    <div className={cn("grid size-7 place-items-center rounded-md text-[10px] font-medium", className)}>
       <Icon size={14} />
     </div>
   );
 }
 
-export function FileUploader({
-  projectId,
-  initialFiles = []
-}: {
-  projectId: string;
-  initialFiles?: DashboardFile[];
-}) {
+export function FileUploader({ projectId, initialFiles = [] }: { projectId: string; initialFiles?: DashboardFile[] }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [uploads, setUploads] = useState<UploadingFile[]>([]);
@@ -65,13 +58,7 @@ export function FileUploader({
   const [filter, setFilter] = useState<"all" | "pending" | "approved">("all");
   const [error, setError] = useState("");
 
-  const visibleFiles = files.filter((file) => {
-    if (filter === "all") {
-      return true;
-    }
-
-    return file.approval_status === filter;
-  });
+  const visibleFiles = files.filter((file) => (filter === "all" ? true : file.approval_status === filter));
 
   function validate(file: File) {
     const extension = getFileExtension(file.name);
@@ -95,11 +82,7 @@ export function FileUploader({
     formData.append("file", file);
     formData.append("projectId", projectId);
 
-    const response = await fetch("/api/files/upload", {
-      method: "POST",
-      body: formData
-    });
-
+    const response = await fetch("/api/files/upload", { method: "POST", body: formData });
     window.clearInterval(timer);
 
     if (!response.ok) {
@@ -118,14 +101,9 @@ export function FileUploader({
   }
 
   function handleFiles(fileList: FileList | null) {
-    if (!fileList) {
-      return;
-    }
-
+    if (!fileList) return;
     setError("");
-    Array.from(fileList).forEach((file) => {
-      void uploadOne(file);
-    });
+    Array.from(fileList).forEach((file) => void uploadOne(file));
   }
 
   function handleDrop(event: DragEvent<HTMLDivElement>) {
@@ -137,10 +115,7 @@ export function FileUploader({
   async function download(path: string) {
     const response = await fetch(`/api/files/signed-url?path=${encodeURIComponent(path)}&expires=86400`);
     const result = (await response.json()) as { signedUrl?: string };
-
-    if (result.signedUrl) {
-      window.open(result.signedUrl, "_blank", "noopener,noreferrer");
-    }
+    if (result.signedUrl) window.open(result.signedUrl, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -153,22 +128,12 @@ export function FileUploader({
         onDragOver={(event) => event.preventDefault()}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
-        className={cn(
-          "cursor-pointer rounded-xl border-[1.5px] border-dashed border-purple-200 bg-white p-8 text-center",
-          dragging && "border-purple-400 bg-purple-50"
-        )}
+        className={cn("cursor-pointer rounded-xl border-[1.5px] border-dashed border-purple-200 bg-white p-8 text-center", dragging && "border-purple-400 bg-purple-50")}
       >
         <Upload size={24} className="mx-auto mb-2 text-purple-400" />
         <p className="text-[13px] leading-[1.6] text-text-secondary">Dosya sürükle veya tıkla</p>
         <p className="text-[11px] leading-[1.6] text-text-hint">Maks 50MB</p>
-        <input
-          ref={inputRef}
-          hidden
-          multiple
-          type="file"
-          accept=".pdf,.jpg,.jpeg,.png,.mp4,.zip,.docx,.xlsx"
-          onChange={(event: ChangeEvent<HTMLInputElement>) => handleFiles(event.target.files)}
-        />
+        <input ref={inputRef} hidden multiple type="file" accept=".pdf,.jpg,.jpeg,.png,.mp4,.zip,.docx,.xlsx" onChange={(event: ChangeEvent<HTMLInputElement>) => handleFiles(event.target.files)} />
       </div>
 
       {error ? <p className="text-[12px] leading-[1.6] text-coral-400">{error}</p> : null}
@@ -196,7 +161,7 @@ export function FileUploader({
       ) : null}
 
       <div>
-        <div className="mb-3 flex gap-2">
+        <div className="mb-3 flex flex-wrap gap-2">
           {[
             { key: "all", label: "Tümü" },
             { key: "pending", label: "Onay bekleyen" },
@@ -204,10 +169,7 @@ export function FileUploader({
           ].map((item) => (
             <button
               key={item.key}
-              className={cn(
-                "rounded-full px-3 py-1 text-[12px] font-medium",
-                filter === item.key ? "bg-purple-600 text-white" : "bg-white text-text-secondary"
-              )}
+              className={cn("rounded-full px-3 py-1 text-[12px] font-medium", filter === item.key ? "bg-purple-600 text-white" : "bg-white text-text-secondary")}
               onClick={() => setFilter(item.key as typeof filter)}
             >
               {item.label}
@@ -215,7 +177,7 @@ export function FileUploader({
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {visibleFiles.map((file) => {
             const badge = approvalLabels[file.approval_status];
             return (
@@ -244,11 +206,7 @@ export function FileUploader({
                     <Download size={14} />
                   </button>
                 </div>
-                {badge ? (
-                  <span className={cn("mt-3 inline-flex rounded-full px-2 py-1 text-[11px] font-medium leading-[1.6]", badge.className)}>
-                    {badge.label}
-                  </span>
-                ) : null}
+                {badge ? <span className={cn("mt-3 inline-flex rounded-full px-2 py-1 text-[11px] font-medium leading-[1.6]", badge.className)}>{badge.label}</span> : null}
               </div>
             );
           })}

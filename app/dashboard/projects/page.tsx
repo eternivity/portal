@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { NewProjectModal } from "@/components/dashboard/NewProjectModal";
 import { Topbar } from "@/components/dashboard/Topbar";
-import { projects } from "@/lib/dashboard-data";
-import Link from "next/link";
+import { getDashboardProjects } from "@/lib/dashboard-data";
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await getDashboardProjects();
+
   return (
     <>
       <Topbar title="Projeler" action={<NewProjectModal />} />
@@ -17,6 +19,7 @@ export default function ProjectsPage() {
             </div>
           </Link>
         ))}
+        {!projects.length ? <div className="rounded-xl border bg-white p-6 text-[13px] text-text-secondary">Henüz proje yok.</div> : null}
       </div>
     </>
   );

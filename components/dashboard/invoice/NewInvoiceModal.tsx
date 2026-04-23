@@ -9,6 +9,8 @@ import type { DashboardInvoice, InvoiceLineItem } from "@/lib/invoice-data";
 import { calculateInvoiceTotals } from "@/lib/invoice-data";
 
 type NewInvoiceModalProps = {
+  projectId: string;
+  clientId: string;
   projectName: string;
   clientName: string;
   open: boolean;
@@ -16,7 +18,7 @@ type NewInvoiceModalProps = {
   onSave: (invoice: DashboardInvoice) => void;
 };
 
-export function NewInvoiceModal({ projectName, clientName, open, onClose, onSave }: NewInvoiceModalProps) {
+export function NewInvoiceModal({ projectId, clientId, projectName, clientName, open, onClose, onSave }: NewInvoiceModalProps) {
   const [currency, setCurrency] = useState<DashboardInvoice["currency"]>("USD");
   const [dueDate, setDueDate] = useState("2026-05-08");
   const [items, setItems] = useState<InvoiceLineItem[]>([
@@ -30,9 +32,9 @@ export function NewInvoiceModal({ projectName, clientName, open, onClose, onSave
   const totals = calculateInvoiceTotals(items, 0);
   const invoice: DashboardInvoice = {
     id: `inv_${Date.now()}`,
-    project_id: "demo-project",
+    project_id: projectId,
     freelancer_id: "demo-freelancer",
-    client_id: "demo-client",
+    client_id: clientId,
     freelancer_name: "Ali Yılmaz",
     freelancer_email: "ali@portalkit.app",
     freelancer_city: "İstanbul",
@@ -65,7 +67,7 @@ export function NewInvoiceModal({ projectName, clientName, open, onClose, onSave
           </button>
         </div>
 
-        <div className="mb-4 grid grid-cols-3 gap-3 rounded-xl border bg-white p-4">
+        <div className="mb-4 grid grid-cols-1 gap-3 rounded-xl border bg-white p-4 md:grid-cols-3">
           <Input value={clientName} readOnly />
           <select value={currency} onChange={(event) => setCurrency(event.target.value as DashboardInvoice["currency"])} className="h-10 rounded-lg border bg-white px-3 text-[13px]">
             <option>USD</option>

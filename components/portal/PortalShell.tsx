@@ -33,30 +33,27 @@ export function PortalShell({ data }: { data: PortalData }) {
 
   return (
     <main className="min-h-screen bg-bg-page">
-      <header className="flex h-[72px] items-center justify-between px-6" style={{ backgroundColor: brandColor }}>
-        <div className="flex items-center gap-3">
+      <header className="flex min-h-[72px] flex-col gap-3 px-4 py-4 sm:px-6 md:h-[72px] md:flex-row md:items-center md:justify-between md:py-0" style={{ backgroundColor: brandColor }}>
+        <div className="flex min-w-0 items-center gap-3">
           <div className="grid size-8 place-items-center rounded-full bg-white/20 text-[11px] font-medium text-white">
             {initials(data.freelancer.full_name)}
           </div>
-          <div>
-            <h1 className="text-[15px] font-medium leading-[1.6] text-white">{data.project.title}</h1>
+          <div className="min-w-0">
+            <h1 className="truncate text-[15px] font-medium leading-[1.6] text-white">{data.project.title}</h1>
             <p className="text-[12px] leading-[1.6] text-white/70">{data.freelancer.full_name} tarafından paylaşıldı</p>
           </div>
         </div>
-        <span className="rounded-full bg-white/15 px-[10px] py-[3px] text-[11px] font-medium leading-[1.6] text-white">
+        <span className="self-start rounded-full bg-white/15 px-[10px] py-[3px] text-[11px] font-medium leading-[1.6] text-white md:self-auto">
           {statusLabels[data.project.status] ?? data.project.status}
         </span>
       </header>
 
-      <nav className="flex border-b bg-white px-6">
+      <nav className="flex overflow-x-auto border-b bg-white px-2 sm:px-6">
         {tabs.map((tab) => (
           <button
             key={tab}
-            className={cn("border-b-2 border-transparent px-4 py-3 text-[13px] text-text-secondary", activeTab === tab && "font-medium")}
-            style={{
-              borderBottomColor: activeTab === tab ? brandColor : "transparent",
-              color: activeTab === tab ? brandColor : undefined
-            }}
+            className={cn("shrink-0 border-b-2 border-transparent px-4 py-3 text-[13px] text-text-secondary", activeTab === tab && "font-medium")}
+            style={{ borderBottomColor: activeTab === tab ? brandColor : "transparent", color: activeTab === tab ? brandColor : undefined }}
             onClick={() => setActiveTab(tab)}
           >
             {tab}
@@ -64,12 +61,10 @@ export function PortalShell({ data }: { data: PortalData }) {
         ))}
       </nav>
 
-      <section className="p-6">
+      <section className="p-4 sm:p-6">
         {activeTab === "Dosyalar" ? <FilesTab initialFiles={data.files} /> : null}
         {activeTab === "Fatura" ? <InvoiceTab invoice={data.invoices[0] ?? null} /> : null}
-        {activeTab === "Mesajlar" ? (
-          <MessagesTab projectId={data.project.id} brandColor={brandColor} initialMessages={data.messages} />
-        ) : null}
+        {activeTab === "Mesajlar" ? <MessagesTab projectId={data.project.id} brandColor={brandColor} initialMessages={data.messages} /> : null}
         {activeTab === "Sözleşme" ? <ContractTab contract={data.contract} brandColor={brandColor} /> : null}
       </section>
     </main>

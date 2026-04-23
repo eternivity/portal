@@ -1,8 +1,10 @@
 import { NewClientModal } from "@/components/dashboard/NewClientModal";
 import { Topbar } from "@/components/dashboard/Topbar";
-import { clients } from "@/lib/dashboard-data";
+import { getDashboardClients } from "@/lib/dashboard-data";
 
-export default function ClientsPage() {
+export default async function ClientsPage() {
+  const clients = await getDashboardClients();
+
   return (
     <>
       <Topbar title="Müşteriler" action={<NewClientModal />} />
@@ -28,6 +30,11 @@ export default function ClientsPage() {
                 <td className="px-[14px] py-3 text-text-secondary">{client.createdAt}</td>
               </tr>
             ))}
+            {!clients.length ? (
+              <tr>
+                <td colSpan={5} className="px-[14px] py-6 text-[13px] text-text-secondary">Henüz müşteri yok.</td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>

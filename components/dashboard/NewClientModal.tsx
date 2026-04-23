@@ -1,17 +1,45 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 
 export function NewClientModal() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setLoading(true);
+    setError("");
+
+    const response = await fetch("/api/clients", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name, email, company })
+    });
+
+    const result = (await response.json().catch(() => null)) as { error?: string } | null;
+    setLoading(false);
+
+    if (!response.ok) {
+      setError(result?.error ?? "Müşteri oluşturulamadı.");
+      return;
+    }
+
     setOpen(false);
+    setName("");
+    setEmail("");
+    setCompany("");
+    router.refresh();
   }
 
   return (
@@ -30,10 +58,11 @@ export function NewClientModal() {
               </button>
             </div>
             <form className="space-y-3" onSubmit={handleSubmit}>
-              <Input placeholder="Ad" required />
-              <Input type="email" placeholder="E-posta" required />
-              <Input placeholder="Şirket" />
-              <Button type="submit" className="w-full">Müşteriyi ekle</Button>
+              <Input placeholder="Ad" required value={name} onChange={(event) => setName(event.target.value)} />
+              <Input type="email" placeholder="E-posta" required value={email} onChange={(event) => setEmail(event.target.value)} />
+              <Input placeholder="Şirket" value={company} onChange={(event) => setCompany(event.target.value)} />
+              {error ? <p className="text-[12px] text-coral-400">{error}</p> : null}
+              <Button type="submit" className="w-full" disabled={loading}>{loading ? "Kaydediliyor" : "Müşteriyi ekle"}</Button>
             </form>
           </Card>
         </div>

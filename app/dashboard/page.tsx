@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { NewProjectModal } from "@/components/dashboard/NewProjectModal";
 import { Topbar } from "@/components/dashboard/Topbar";
-import { dashboardStats, projects } from "@/lib/dashboard-data";
+import { getDashboardProjects, getDashboardStats } from "@/lib/dashboard-data";
 import { cn } from "@/lib/helpers";
 
 const statusStyles = {
@@ -16,13 +16,15 @@ const statusLabels = {
   completed: "Tamamlandı"
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const [stats, projects] = await Promise.all([getDashboardStats(), getDashboardProjects()]);
+
   return (
     <>
       <Topbar title="Dashboard" action={<NewProjectModal />} />
 
-      <section className="mb-6 grid grid-cols-4 gap-[10px]">
-        {dashboardStats.map((stat) => (
+      <section className="mb-6 grid grid-cols-1 gap-[10px] sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat) => (
           <div key={stat.label} className="rounded-xl border bg-white p-[14px]">
             <p className="mb-[6px] text-[11px] leading-[1.6] text-text-secondary">{stat.label}</p>
             <p className="text-[22px] font-medium leading-tight text-text-primary">{stat.value}</p>
@@ -32,9 +34,7 @@ export default function DashboardPage() {
       </section>
 
       <section>
-        <p className="mb-3 text-[12px] font-medium uppercase leading-[1.6] tracking-[0.06em] text-text-secondary">
-          Projeler
-        </p>
+        <p className="mb-3 text-[12px] font-medium uppercase leading-[1.6] tracking-[0.06em] text-text-secondary">Projeler</p>
         <div className="space-y-[10px]">
           {projects.map((project) => (
             <Link
@@ -52,6 +52,7 @@ export default function DashboardPage() {
               <span className={cn("size-[6px] rounded-full", project.unread ? "bg-coral-400" : "bg-transparent")} />
             </Link>
           ))}
+          {!projects.length ? <div className="rounded-xl border bg-white p-6 text-[13px] text-text-secondary">Henüz proje yok.</div> : null}
         </div>
       </section>
     </>

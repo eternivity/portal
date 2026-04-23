@@ -19,15 +19,15 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed inset-y-0 left-0 flex w-[200px] flex-col border-r bg-bg-surface">
-      <div className="mb-5 p-4">
+    <aside className="fixed inset-x-0 top-0 z-40 border-b bg-bg-surface md:inset-y-0 md:left-0 md:right-auto md:flex md:w-[200px] md:flex-col md:border-b-0 md:border-r">
+      <div className="p-4 md:mb-5">
         <div className="flex items-center gap-2">
           <span className="inline-block h-[22px] w-[22px] rounded-md bg-purple-600" />
           <span className="text-[15px] font-medium">PortalKit</span>
         </div>
       </div>
 
-      <nav>
+      <nav className="flex gap-1 overflow-x-auto px-2 pb-3 md:block md:flex-1 md:overflow-visible md:px-0 md:pb-0">
         {navItems.map((item) => {
           const active = item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
 
@@ -36,7 +36,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex cursor-pointer items-center gap-[9px] px-4 py-[7px] text-[13px] text-text-secondary hover:bg-bg-secondary",
+                "flex shrink-0 cursor-pointer items-center gap-[9px] rounded-lg px-4 py-[7px] text-[13px] text-text-secondary hover:bg-bg-secondary md:rounded-none",
                 active && "bg-bg-secondary font-medium text-text-primary"
               )}
             >
@@ -52,7 +52,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto border-t px-4 py-3">
+      <div className="hidden border-t px-4 py-3 md:mt-auto md:block">
         <div className="flex items-center gap-3">
           <Avatar name="Emre Aydin" />
           <div className="min-w-0">

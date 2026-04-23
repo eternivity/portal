@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import { ProjectWorkspace } from "@/components/dashboard/ProjectWorkspace";
-import { projects } from "@/lib/dashboard-data";
+import { getDashboardProjectById } from "@/lib/dashboard-data";
 
-export default function ProjectDetailPage({ params }: { params: { id: string } }) {
-  const project = projects.find((item) => item.id === params.id);
+export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+  const project = await getDashboardProjectById(params.id);
 
   if (!project) {
     notFound();

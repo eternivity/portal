@@ -42,7 +42,7 @@ export function FilesTab({ initialFiles }: { initialFiles: PortalFile[] }) {
         <span className="text-[11px] leading-[1.6] text-text-secondary">{files.length} dosya</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
         {files.map((file) => {
           const type = (file.file_type ?? "pdf").toLowerCase();
           const style = fileTypeStyles[type] ?? fileTypeStyles.pdf;
@@ -51,9 +51,7 @@ export function FilesTab({ initialFiles }: { initialFiles: PortalFile[] }) {
           return (
             <div key={file.id} className={cn("relative rounded-xl border bg-white p-3", approved && "opacity-60")}>
               <div className="flex items-center gap-3">
-                <div className={cn("grid size-7 place-items-center rounded-md text-[10px] font-medium", style.className)}>
-                  {style.icon}
-                </div>
+                <div className={cn("grid size-7 place-items-center rounded-md text-[10px] font-medium", style.className)}>{style.icon}</div>
                 <div className="min-w-0">
                   <p className="truncate text-[12px] font-medium leading-[1.6]">{file.file_name}</p>
                   <p className="text-[11px] leading-[1.6] text-text-secondary">{formatFileSize(file.file_size)}</p>
